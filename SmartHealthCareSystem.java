@@ -24,7 +24,7 @@ class PatientRecord {
     private List<String> history;
     private List<String> medications;
     private Map<String, String> deviceData;
-    private int visitCount;  // Track the number of visits
+    private int visitCount;
     private String personalizedAdvice;
 
     public PatientRecord(String name, String diagnosis, String prescription, List<String> symptoms, List<String> history, List<String> medications) {
@@ -35,8 +35,8 @@ class PatientRecord {
         this.history = history != null ? new ArrayList<>(history) : new ArrayList<>();
         this.medications = medications != null ? new ArrayList<>(medications) : new ArrayList<>();
         this.deviceData = new HashMap<>();
-        this.visitCount = 1;  // Initialize visit count
-        this.personalizedAdvice = generatePersonalizedAdvice();  // Generate advice on creation
+        this.visitCount = 1;
+        this.personalizedAdvice = generatePersonalizedAdvice();
     }
 
     public String getName() {
@@ -56,17 +56,16 @@ class PatientRecord {
     }
 
     public void updateRecord(String diagnosis, String prescription, List<String> history, List<String> medications, List<String> symptoms) {
-        if (!diagnosis.isEmpty()) this.diagnosis = diagnosis;
-        if (!prescription.isEmpty()) this.prescription = prescription;
+        if (diagnosis != null && !diagnosis.isEmpty()) this.diagnosis = diagnosis;
+        if (prescription != null && !prescription.isEmpty()) this.prescription = prescription;
         if (history != null && !history.isEmpty()) this.history = new ArrayList<>(history);
         if (medications != null && !medications.isEmpty()) this.medications = new ArrayList<>(medications);
         if (symptoms != null && !symptoms.isEmpty()) this.symptoms = new ArrayList<>(symptoms);
         this.visitCount++;
-        this.personalizedAdvice = generatePersonalizedAdvice();  // Regenerate advice on update
+        this.personalizedAdvice = generatePersonalizedAdvice();
     }
 
     private String generatePersonalizedAdvice() {
-        // Simple AI-based advice generator
         String advice = "Based on your symptoms and medical history, we recommend: ";
         advice += visitCount > 1 ? "Regular follow-ups, " : "An initial consultation, ";
         advice += symptoms.contains("fever") ? "plenty of rest, " : "";
@@ -117,7 +116,6 @@ class SmartHealthCareSystem {
                 System.out.println("Match found for patient: " + record.getName());
                 System.out.println(record);
 
-                // Suggest random treatments
                 Collections.shuffle(SUGGESTIONS);
                 List<String> selectedSuggestions = SUGGESTIONS.subList(0, Math.min(3, SUGGESTIONS.size()));
                 System.out.println("Suggested Treatment: " + String.join(", ", selectedSuggestions) + "\n");
@@ -155,11 +153,14 @@ class SmartHealthCareSystem {
                 System.out.print("Enter new prescription (leave blank to keep current): ");
                 String prescription = scanner.nextLine();
                 System.out.print("Enter new past health issues (comma-separated, leave blank to keep current): ");
-                List<String> pastHealthIssues = scanner.nextLine().isEmpty() ? null : Arrays.asList(scanner.nextLine().split("\\s*,\\s*"));
+                String historyInput = scanner.nextLine();
+                List<String> pastHealthIssues = historyInput.isEmpty() ? null : Arrays.asList(historyInput.split("\\s*,\\s*"));
                 System.out.print("Enter new medications (comma-separated, leave blank to keep current): ");
-                List<String> medications = scanner.nextLine().isEmpty() ? null : Arrays.asList(scanner.nextLine().split("\\s*,\\s*"));
+                String medicationsInput = scanner.nextLine();
+                List<String> medications = medicationsInput.isEmpty() ? null : Arrays.asList(medicationsInput.split("\\s*,\\s*"));
                 System.out.print("Enter new symptoms (comma-separated, leave blank to keep current): ");
-                List<String> symptoms = scanner.nextLine().isEmpty() ? null : Arrays.asList(scanner.nextLine().split("\\s*,\\s*"));
+                String symptomsInput = scanner.nextLine();
+                List<String> symptoms = symptomsInput.isEmpty() ? null : Arrays.asList(symptomsInput.split("\\s*,\\s*"));
 
                 record.updateRecord(diagnosis, prescription, pastHealthIssues, medications, symptoms);
                 System.out.println("Record updated.");
